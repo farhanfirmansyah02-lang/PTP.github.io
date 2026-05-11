@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tes Kemampuan Persepsi Warna</title>
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{--navy:#1e3c5c;--blue:#2c5282;--blue-light:#3182ce;--blue-pale:#ebf8ff;--sky:#bee3f8;--gray-light:#f0f4f8;--gray-mid:#e2e8f0;--gray-dark:#4a5568;--text:#1a2a3a;--green:#38a169;--red:#e53e3e;--white:#fff;--shadow:0 6px 20px rgba(0,0,0,.10);--radius:18px}
+        body{font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(135deg,#f0f4f8,#d9e2ec);min-height:100vh;color:var(--text)}
+        .top-nav{background:var(--navy);color:#fff;padding:.7rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.3)}
+        .brand{font-size:1.1rem;font-weight:bold;letter-spacing:.5px}
+        .nav-pills{display:flex;gap:.4rem;flex-wrap:wrap}
+        .nav-pill{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.25);color:#fff;padding:.3rem .9rem;border-radius:30px;font-size:.8rem;font-weight:bold;cursor:pointer;transition:.2s}
+        .nav-pill:hover{background:rgba(255,255,255,.28)}
+        .nav-pill.active{background:#fff;color:var(--navy)}
+        .nav-pill.locked{opacity:.45;cursor:not-allowed}
+        .user-chip{background:rgba(255,255,255,.18);border-radius:30px;padding:.25rem .8rem;font-size:.78rem;display:none}
+        .user-chip.show{display:inline-block}
+        .page{display:none;padding:28px 18px 60px;max-width:1100px;margin:0 auto}
+        .page.active{display:block}
+        .identity-card{background:var(--white);border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow);max-width:620px;margin:0 auto}
+        .identity-card h2{color:var(--navy);font-size:1.6rem;margin-bottom:.3rem}
+        .identity-card p{color:var(--gray-dark);font-size:.9rem;margin-bottom:1.5rem}
+        .form-group{margin-bottom:1.1rem}
+        .form-group label{display:block;font-weight:bold;margin-bottom:.35rem;color:var(--navy);font-size:.9rem}
+        .form-group input,.form-group select{width:100%;padding:.65rem 1rem;border:2px solid var(--gray-mid);border-radius:10px;font-size:.95rem;outline:none;transition:border-color .2s}
+        .form-group input:focus,.form-group select:focus{border-color:var(--blue-light)}
+        .btn-start{width:100%;background:var(--blue);color:#fff;border:none;padding:.85rem;border-radius:40px;font-weight:bold;font-size:1.05rem;cursor:pointer;margin-top:.5rem;transition:.2s;box-shadow:0 4px 12px rgba(44,82,130,.3)}
+        .btn-start:hover{background:var(--navy);transform:scale(1.01)}
+        .share-panel{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+        .share-panel h3{font-size:1.1rem;margin-bottom:.3rem}
+        .share-panel p{font-size:.82rem;opacity:.88}
+        .btn-share{background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.5);color:#fff;padding:.5rem 1.2rem;border-radius:30px;font-weight:bold;cursor:pointer;transition:.2s;white-space:nowrap}
+        .btn-share:hover{background:rgba(255,255,255,.35)}
+        .share-url-box{display:none;background:var(--white);border-radius:var(--radius);padding:1rem 1.2rem;margin-bottom:1.2rem;border:2px dashed var(--blue-light)}
+        .share-url-box.show{display:block}
+        .share-url-box p{font-size:.82rem;color:var(--gray-dark);margin-bottom:.5rem}
+        .url-text{background:var(--gray-light);border-radius:8px;padding:.5rem .8rem;font-size:.78rem;word-break:break-all;color:var(--navy);font-family:monospace;margin-bottom:.5rem}
+        .btn-copy{background:var(--blue);color:#fff;border:none;padding:.4rem 1rem;border-radius:20px;font-size:.82rem;cursor:pointer;font-weight:bold;transition:.2s}
+        .btn-copy:hover{background:var(--navy)}
+        .level-header{text-align:center;margin-bottom:1.4rem}
+        .badge-main{background:var(--blue);color:white;padding:.3rem 1.2rem;border-radius:30px;font-size:.8rem;font-weight:bold;display:inline-block;margin-bottom:.7rem}
+        .level-header h1{font-size:1.5rem;color:var(--navy)}
+        .instruction{background:var(--blue-pale);padding:.8rem 1.3rem;border-radius:14px;margin-bottom:1.5rem;border-left:5px solid var(--blue-light);font-size:.88rem;color:#2c5282}
+        .palette-container{background:var(--white);border-radius:var(--radius);padding:1rem;margin-bottom:1.6rem;box-shadow:0 4px 12px rgba(0,0,0,.07)}
+        .palette-title{text-align:center;font-weight:bold;margin-bottom:.7rem;color:#2d3748;font-size:.9rem}
+        .palette-row{display:flex;flex-wrap:wrap;justify-content:center;gap:1.5rem;row-gap:.8rem}
+        .palette-family{text-align:center}
+        .palette-family-title{font-size:.75rem;font-weight:bold;margin-bottom:.25rem}
+        .palette-swatches{display:flex;gap:6px}
+        .swatch{width:46px;height:46px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;font-size:.55rem;color:white;text-shadow:0 0 2px rgba(0,0,0,.8);padding-bottom:3px;font-weight:bold}
+        .soal-card{background:var(--white);border-radius:var(--radius);box-shadow:0 5px 14px rgba(0,0,0,.09);padding:1.2rem;margin-bottom:1.4rem}
+        .soal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem;padding-bottom:.4rem;border-bottom:2px solid var(--gray-mid);flex-wrap:wrap;gap:.4rem}
+        .soal-nomor{background:var(--blue);color:white;padding:.2rem 1rem;border-radius:30px;font-size:.74rem;font-weight:bold}
+        .difficulty{background:#fed7d7;color:#c53030;padding:.2rem .7rem;border-radius:30px;font-size:.7rem;font-weight:bold}
+        .soal-pertanyaan{font-size:.87rem;color:#2d3748;margin-bottom:.9rem;font-style:italic;padding:.4rem .6rem;background:#f7fafc;border-radius:10px}
+        .pattern{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px;margin:.9rem 0;padding:.8rem;background:#f8fafc;border-radius:14px}
+        .color-box{width:55px;height:55px;border-radius:11px;box-shadow:0 3px 6px rgba(0,0,0,.14);border:2px solid white}
+        .arrow{font-size:18px;font-weight:bold;color:#718096}
+        .question-box{width:55px;height:55px;background:#edf2f7;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:bold;color:#4a5568;border:2px dashed #a0aec0}
+        .options{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:10px;margin:.8rem 0 .3rem}
+        .option-radio{display:flex;flex-direction:column;align-items:center;gap:5px;background:#f1f5f9;padding:9px 7px;border-radius:14px;cursor:pointer;transition:all .2s;border:1.5px solid var(--gray-mid)}
+        .option-radio:hover{background:var(--gray-mid)}
+        .option-radio.selected{background:var(--sky);border-color:var(--blue-light);box-shadow:0 0 0 2px #90cdf4}
+        .opt-color{width:43px;height:43px;border-radius:9px;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+        .opt-label{font-weight:bold;font-size:.85rem;color:#2d3748}
+        .opt-colors{display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
+        .opt-color-item{width:28px;height:28px;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+        .submit-area{text-align:center;margin:1.4rem 0 1rem}
+        .btn-submit{background:var(--blue);color:white;border:none;padding:11px 30px;border-radius:40px;font-weight:bold;font-size:.97rem;cursor:pointer;transition:.2s;box-shadow:0 4px 8px rgba(0,0,0,.18)}
+        .btn-submit:hover{background:var(--navy);transform:scale(1.02)}
+        .btn-submit:disabled{background:#a0aec0;cursor:not-allowed;transform:none}
+        .result-card{background:linear-gradient(135deg,var(--navy),#2a4a6e);color:white;border-radius:22px;padding:1.3rem;margin-top:1.4rem;margin-bottom:1.4rem;box-shadow:0 10px 25px rgba(0,0,0,.2)}
+        .result-title{font-size:1.2rem;font-weight:bold;text-align:center;margin-bottom:1rem}
+        .score-big{text-align:center;font-size:2.5rem;font-weight:bold;margin:.4rem 0}
+        .score-detail{display:flex;justify-content:center;gap:1.5rem;margin:.9rem 0;flex-wrap:wrap}
+        .score-item{text-align:center;background:rgba(255,255,255,.2);padding:.45rem 1.1rem;border-radius:40px;font-size:.88rem}
+        .outcome-table{width:100%;border-collapse:collapse;margin-top:.8rem;font-size:.78rem}
+        .outcome-table th,.outcome-table td{border:1px solid rgba(255,255,255,.3);padding:7px 5px;text-align:center}
+        .outcome-table th{background:rgba(255,255,255,.2)}
+        .correct-badge{background:var(--green);padding:2px 7px;border-radius:18px;font-size:.7rem;font-weight:bold}
+        .wrong-badge{background:var(--red);padding:2px 7px;border-radius:18px;font-size:.7rem;font-weight:bold}
+        .summary-card{background:var(--white);border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow);margin-bottom:1.5rem}
+        .summary-card h2{color:var(--navy);font-size:1.4rem;margin-bottom:1rem;text-align:center}
+        .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem}
+        .summary-block{background:var(--blue-pale);border-radius:14px;padding:1.2rem 1rem;text-align:center;border:2px solid #bee3f8}
+        .sb-label{font-size:.78rem;font-weight:bold;color:var(--blue);margin-bottom:.4rem}
+        .sb-score{font-size:2rem;font-weight:bold;color:var(--navy)}
+        .sb-total{font-size:.78rem;color:var(--gray-dark)}
+        .btn-gsheet{background:#276749;color:white;border:none;padding:12px 32px;border-radius:40px;font-weight:bold;font-size:1rem;cursor:pointer;transition:.2s;box-shadow:0 4px 12px rgba(39,103,73,.3);display:inline-flex;align-items:center;gap:.5rem}
+        .btn-gsheet:hover:not(:disabled){background:#1c4532;transform:scale(1.02)}
+        .btn-gsheet:disabled{background:#a0aec0;cursor:not-allowed;transform:none}
+        .progress-bar{background:var(--gray-mid);border-radius:30px;height:10px;margin-top:.5rem}
+        .progress-fill{height:100%;border-radius:30px;background:linear-gradient(90deg,#3182ce,#38a169);transition:width .5s}
+        .toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:white;padding:.7rem 1.2rem;border-radius:12px;font-size:.88rem;z-index:999;box-shadow:0 4px 14px rgba(0,0,0,.3);transform:translateY(80px);opacity:0;transition:.3s}
+        .toast.show{transform:translateY(0);opacity:1}
+        footer{text-align:center;margin-top:2rem;font-size:.7rem;color:#4a5568}
+        .submit-status{text-align:center;margin-top:1rem;font-size:.9rem;color:#2c5282;min-height:1.5rem}
+        .badge-type{font-size:.7rem;font-weight:bold;padding:2px 8px;border-radius:20px}
+        .badge-tg{background:#bee3f8;color:#1a365d}
+        .badge-gt{background:#c6f6d5;color:#1a4731}
+        .badge-cs{background:#feebc8;color:#7b341e}
+        .badge-3a{background:#e9d8fd;color:#44337a}
+        .badge-3b{background:#fed7d7;color:#742a2a}
+        .badge-3c{background:#fefcbf;color:#744210}
+    </style>
+</head>
+<body>
+<div class="top-nav">
+    <span class="brand">🎨 Tes Persepsi Warna</span>
+    <div class="nav-pills">
+        <button class="nav-pill" id="navIdentity" onclick="goToPage('page-identity')">📋 Identitas</button>
+        <button class="nav-pill locked" id="navL1" onclick="goToPage('page-l1')">Level 1</button>
+        <button class="nav-pill locked" id="navL2" onclick="goToPage('page-l2')">Level 2</button>
+        <button class="nav-pill locked" id="navL3" onclick="goToPage('page-l3')">Level 3</button>
+        <button class="nav-pill locked" id="navSummary" onclick="goToPage('page-summary')">📊 Hasil</button>
+    </div>
+    <span class="user-chip" id="userChip">-</span>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- IDENTITY -->
+<div class="page active" id="page-identity">
+    <div style="max-width:620px;margin:0 auto 1.2rem;">
+        <div class="share-panel">
+            <div><h3>📤 Bagikan Tes Ini</h3><p>Kirim link ke peserta lain.</p></div>
+            <button class="btn-share" onclick="showShareLink()">🔗 Dapatkan Link</button>
+        </div>
+        <div class="share-url-box" id="shareUrlBox">
+            <p>Salin link di bawah ini:</p>
+            <div class="url-text" id="shareUrl"></div>
+            <button class="btn-copy" onclick="copyLink()">📋 Salin Link</button>
+        </div>
+    </div>
+    <div class="identity-card">
+        <h2>📋 Data Peserta</h2>
+        <p>Isi data diri Anda sebelum memulai tes.</p>
+        <div class="form-group"><label>Nama Lengkap *</label><input type="text" id="nama" placeholder="Masukkan nama lengkap"/></div>
+        <div class="form-group"><label>Tanggal Lahir *</label><input type="date" id="tglLahir"/></div>
+        <div class="form-group"><label>Jenis Kelamin *</label>
+            <select id="jenisKelamin"><option value="">-- Pilih --</option><option>Laki-laki</option><option>Perempuan</option></select></div>
+        <div class="form-group"><label>Pendidikan Terakhir *</label>
+            <select id="pendidikan"><option value="">-- Pilih --</option><option>SMA/SMK</option><option>D3</option><option>S1</option><option>S2</option><option>S3</option><option>Lainnya</option></select></div>
+        <div class="form-group"><label>Pekerjaan / Posisi</label><input type="text" id="pekerjaan" placeholder="Contoh: Mahasiswa, Desainer"/></div>
+        <button class="btn-start" onclick="startTest()">🚀 Mulai Tes</button>
+    </div>
+</div>
+
+<!-- LEVEL 1 -->
+<div class="page" id="page-l1">
+    <div class="level-header">
+        <span class="badge-main">🧠 Level 1 – Brightness Sequencing</span>
+        <h1>Mengurutkan Tingkat Kecerahan Warna (15 Soal)</h1>
+    </div>
+    <div class="instruction">📌 <strong>Petunjuk:</strong> Perhatikan urutan tingkat kecerahan warna. Tentukan warna yang tepat untuk mengisi posisi <strong>❓</strong>.</div>
+    <div class="palette-container">
+        <div class="palette-title">🎨 Color Palette (Sangat Muda → Muda → Sedang → Agak Tua → Tua)</div>
+        <div class="palette-row">
+            <div class="palette-family"><div class="palette-family-title">🔵 Biru</div><div class="palette-swatches"><div class="swatch" style="background:#B3E5FC;">Sgt Muda</div><div class="swatch" style="background:#4FC3F7;">Muda</div><div class="swatch" style="background:#0288D1;">Sedang</div><div class="swatch" style="background:#01579B;">Agak Tua</div><div class="swatch" style="background:#003366;">Tua</div></div></div>
+            <div class="palette-family"><div class="palette-family-title">🔴 Merah</div><div class="palette-swatches"><div class="swatch" style="background:#FFCDD2;">Sgt Muda</div><div class="swatch" style="background:#EF9A9A;">Muda</div><div class="swatch" style="background:#E53935;">Sedang</div><div class="swatch" style="background:#C62828;">Agak Tua</div><div class="swatch" style="background:#8B0000;">Tua</div></div></div>
+            <div class="palette-family"><div class="palette-family-title">🟢 Hijau</div><div class="palette-swatches"><div class="swatch" style="background:#C8E6C9;">Sgt Muda</div><div class="swatch" style="background:#81C784;">Muda</div><div class="swatch" style="background:#43A047;">Sedang</div><div class="swatch" style="background:#2E7D32;">Agak Tua</div><div class="swatch" style="background:#1B5E20;">Tua</div></div></div>
+            <div class="palette-family"><div class="palette-family-title">🟠 Oranye</div><div class="palette-swatches"><div class="swatch" style="background:#FFE0B2;">Sgt Muda</div><div class="swatch" style="background:#FFB74D;">Muda</div><div class="swatch" style="background:#F57C00;">Sedang</div><div class="swatch" style="background:#E65100;">Agak Tua</div><div class="swatch" style="background:#BF360C;">Tua</div></div></div>
+            <div class="palette-family"><div class="palette-family-title">🟣 Ungu</div><div class="palette-swatches"><div class="swatch" style="background:#E1BEE7;">Sgt Muda</div><div class="swatch" style="background:#CE93D8;">Muda</div><div class="swatch" style="background:#8E24AA;">Sedang</div><div class="swatch" style="background:#6A1B9A;">Agak Tua</div><div class="swatch" style="background:#4A148C;">Tua</div></div></div>
+        </div>
+    </div>
+    <div id="soal-container-l1"></div>
+    <div class="submit-area"><button class="btn-submit" id="submitL1">📝 SUBMIT JAWABAN LEVEL 1</button></div>
+    <div id="result-container-l1"></div>
+    <div id="next-l2-area" style="display:none;text-align:center;margin-top:1rem;">
+        <button class="btn-submit" style="background:#276749;" onclick="goToPage('page-l2')">➡️ Lanjut ke Level 2</button>
+    </div>
+    <footer>Level 1: 15 soal. Submit hanya 1 kali.</footer>
+</div>
+
+<!-- LEVEL 2 -->
+<div class="page" id="page-l2">
+    <div class="level-header">
+        <span class="badge-main">🧠 Level 2 – Sequential Ordering & Manipulation (15 Soal)</span>
+        <h1>Urutkan & Temukan Warna yang Tidak Sesuai</h1>
+    </div>
+    <div class="instruction">📌 <strong>Petunjuk:</strong> 15 soal <strong>campuran acak</strong>: <span class="badge-type badge-tg">🔆 Terang→Gelap</span> <span class="badge-type badge-gt">🌑 Gelap→Terang</span> <span class="badge-type badge-cs">🔍 Cari Tidak Sesuai</span>. Perhatikan label tiap soal.</div>
+    <div class="palette-container">
+        <div class="palette-title">🎨 Color Palette Level 2 (Muda = Terang → Tua = Gelap)</div>
+        <div class="palette-row">
+            <div class="palette-family"><div class="palette-family-title">🔵 Biru</div><div class="palette-swatches"><div class="swatch" style="background:#7FCDCD;">Muda</div><div class="swatch" style="background:#2C7A7A;">Sedang</div><div class="swatch" style="background:#1A535C;">Tua</div></div></div>
+            <div class="palette-family"><div class="palette-family-title">🔴 Merah</div><div class="palette-swatches"><div class="swatch" style="background:#F7A1A1;">Muda</div><div class="swatch" style="background:#D9534F;">Sedang</div><div class="swatch" style="background:#A61C1C;">Tua</div></div></div>
+            <div class="palette-family"><div class="palette-family-title">🟢 Hijau</div><div class="palette-swatches"><div class="swatch" style="background:#A8E6A3;">Muda</div><div class="swatch" style="background:#5FAD56;">Sedang</div><div class="swatch" style="background:#2F6B2F;">Tua</div></div></div>
+            <div class="palette-family"><div class="palette-family-title">🟠 Oranye</div><div class="palette-swatches"><div class="swatch" style="background:#FFD6A5;">Muda</div><div class="swatch" style="background:#F4A261;">Sedang</div><div class="swatch" style="background:#E76F51;">Tua</div></div></div>
+            <div class="palette-family"><div class="palette-family-title">🟣 Ungu</div><div class="palette-swatches"><div class="swatch" style="background:#D9B8FF;">Muda</div><div class="swatch" style="background:#9B59B6;">Sedang</div><div class="swatch" style="background:#6C3483;">Tua</div></div></div>
+        </div>
+    </div>
+    <div id="soal-container-l2"></div>
+    <div class="submit-area"><button class="btn-submit" id="submitL2">📝 SUBMIT JAWABAN LEVEL 2</button></div>
+    <div id="result-container-l2"></div>
+    <div id="next-l3-area" style="display:none;text-align:center;margin-top:1rem;">
+        <button class="btn-submit" style="background:#276749;" onclick="goToPage('page-l3')">➡️ Lanjut ke Level 3</button>
+    </div>
+    <footer>Level 2: 15 soal acak. Submit hanya 1 kali.</footer>
+</div>
+
+<!-- LEVEL 3 -->
+<div class="page" id="page-l3">
+    <div class="level-header">
+        <span class="badge-main">🧠 Level 3 – Pola Kompleks (15 Soal)</span>
+        <h1>Pola Bergantian · Per Kelompok · Multi-aturan</h1>
+    </div>
+    <div class="instruction">📌 <strong>Petunjuk:</strong> 15 soal <strong>campuran acak</strong>: <span class="badge-type badge-3a">🔄 Bergantian</span> <span class="badge-type badge-3b">📦 Per Kelompok</span> <span class="badge-type badge-3c">🔥 Multi-aturan</span>. Posisi ❓ bervariasi di tiap soal.</div>
+    <div class="palette-container">
+        <div class="palette-title">🎨 Color Palette Level 3 (6 keluarga warna × 3 tingkat)</div>
+        <div class="palette-row">
+            <div class="palette-family"><div class="palette-family-title">🔵 Biru</div><div class="palette-swatches"><div class="swatch" style="background:#7FCDCD;">Muda</div><div class="swatch" style="background:#2C7A7A;">Sedang</div><div class="swatch" style="background:#1A535C;">Tua</div></div></div>
+            <div class="palette-family"><div class="palette-family-title">🔴 Merah</div><div class="palette-swatches"><div class="swatch" style="background:#F7A1A1;">Muda</div><div class="swatch" style="background:#D9534F;">Sedang</div><div class="swatch" style="background:#A61C1C;">Tua</div></div></div>
+            <div class="palette-family"><div class="palette-family-title">🟢 Hijau</div><div class="palette-swatches"><div class="swatch" style="background:#A8E6A3;">Muda</div><div class="swatch" style="background:#5FAD56;">Sedang</div><div class="swatch" style="background:#2F6B2F;">Tua</div></div></div>
+            <div class="palette-family"><div class="palette-family-title">🟠 Oranye</div><div class="palette-swatches"><div class="swatch" style="background:#FFD6A5;">Muda</div><div class="swatch" style="background:#F4A261;">Sedang</div><div class="swatch" style="background:#E76F51;">Tua</div></div></div>
+            <div class="palette-family"><div class="palette-family-title">🟣 Ungu</div><div class="palette-swatches"><div class="swatch" style="background:#D9B8FF;">Muda</div><div class="swatch" style="background:#9B59B6;">Sedang</div><div class="swatch" style="background:#6C3483;">Tua</div></div></div>
+            <div class="palette-family"><div class="palette-family-title">🟡 Kuning</div><div class="palette-swatches"><div class="swatch" style="background:#FFF9C4;color:#555;">Muda</div><div class="swatch" style="background:#F9A825;">Sedang</div><div class="swatch" style="background:#E65100;">Tua</div></div></div>
+        </div>
+    </div>
+    <div id="soal-container-l3"></div>
+    <div class="submit-area"><button class="btn-submit" id="submitL3">📝 SUBMIT JAWABAN LEVEL 3</button></div>
+    <div id="result-container-l3"></div>
+    <div id="next-summary-area" style="display:none;text-align:center;margin-top:1rem;">
+        <button class="btn-submit" style="background:#276749;" onclick="goToPage('page-summary')">📊 Lihat Rekap Hasil</button>
+    </div>
+    <footer>Level 3: 15 soal acak. Submit hanya 1 kali.</footer>
+</div>
+
+<!-- SUMMARY -->
+<div class="page" id="page-summary">
+    <div class="summary-card">
+        <h2>📊 Rekap Hasil Keseluruhan</h2>
+        <div id="peserta-info" style="text-align:center;margin-bottom:1rem;color:#4a5568;font-size:.9rem;"></div>
+        <div class="summary-grid" id="summary-grid"></div>
+        <div style="background:#f7fafc;border-radius:14px;padding:1rem;margin-bottom:1.5rem;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:.4rem;font-weight:bold;">
+                <span>Total Skor</span><span id="total-score-text">-</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" id="total-progress" style="width:0%"></div></div>
+        </div>
+        <div style="text-align:center;">
+            <button class="btn-gsheet" id="btnSubmitSheet" onclick="submitToGoogleSheets()">
+                📤 Submit Data ke Google Sheets
+            </button>
+            <div class="submit-status" id="submitStatus"></div>
+        </div>
+    </div>
+    <footer>Terima kasih telah mengikuti Tes Kemampuan Persepsi Warna.</footer>
+</div>
+
+<script>
+// ▼▼▼ GANTI dengan URL deploy App Script Anda ▼▼▼
+const GAS_URL="PASTE_URL_DEPLOY_APP_SCRIPT_ANDA_DI_SINI";
+
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+let peserta={nama:'',tglLahir:'',jenisKelamin:'',pendidikan:'',pekerjaan:''};
+let stateL1={answers:new Array(15).fill(null),submitted:false};
+let stateL2={answers:new Array(15).fill(null),submitted:false};
+let stateL3={answers:new Array(15).fill(null),submitted:false};
+let optionOrderL1=[],optionOrderL2=[],optionOrderL3=[];
+let soalL2Shuffled=[],soalL3Shuffled=[];
+
+const colorsL1={
+    biruSgtMuda:{hex:"#B3E5FC",name:"Biru Sangat Muda"},biruMuda:{hex:"#4FC3F7",name:"Biru Muda"},
+    biruSedang:{hex:"#0288D1",name:"Biru Sedang"},biruAgakTua:{hex:"#01579B",name:"Biru Agak Tua"},biruTua:{hex:"#003366",name:"Biru Tua"},
+    merahSgtMuda:{hex:"#FFCDD2",name:"Merah Sangat Muda"},merahMuda:{hex:"#EF9A9A",name:"Merah Muda"},
+    merahSedang:{hex:"#E53935",name:"Merah Sedang"},merahAgakTua:{hex:"#C62828",name:"Merah Agak Tua"},merahTua:{hex:"#8B0000",name:"Merah Tua"},
+    hijauSgtMuda:{hex:"#C8E6C9",name:"Hijau Sangat Muda"},hijauMuda:{hex:"#81C784",name:"Hijau Muda"},
+    hijauSedang:{hex:"#43A047",name:"Hijau Sedang"},hijauAgakTua:{hex:"#2E7D32",name:"Hijau Agak Tua"},hijauTua:{hex:"#1B5E20",name:"Hijau Tua"},
+    orangeSgtMuda:{hex:"#FFE0B2",name:"Oranye Sangat Muda"},orangeMuda:{hex:"#FFB74D",name:"Oranye Muda"},
+    orangeSedang:{hex:"#F57C00",name:"Oranye Sedang"},orangeAgakTua:{hex:"#E65100",name:"Oranye Agak Tua"},orangeTua:{hex:"#BF360C",name:"Oranye Tua"},
+    unguSgtMuda:{hex:"#E1BEE7",name:"Ungu Sangat Muda"},unguMuda:{hex:"#CE93D8",name:"Ungu Muda"},
+    unguSedang:{hex:"#8E24AA",name:"Ungu Sedang"},unguAgakTua:{hex:"#6A1B9A",name:"Ungu Agak Tua"},unguTua:{hex:"#4A148C",name:"Ungu Tua"}
+};
+
+const colorsL23={
+    biruMuda:{hex:"#7FCDCD",name:"Biru Muda",level:1,family:"biru"},biruSedang:{hex:"#2C7A7A",name:"Biru Sedang",level:2,family:"biru"},biruTua:{hex:"#1A535C",name:"Biru Tua",level:3,family:"biru"},
+    merahMuda:{hex:"#F7A1A1",name:"Merah Muda",level:1,family:"merah"},merahSedang:{hex:"#D9534F",name:"Merah Sedang",level:2,family:"merah"},merahTua:{hex:"#A61C1C",name:"Merah Tua",level:3,family:"merah"},
+    hijauMuda:{hex:"#A8E6A3",name:"Hijau Muda",level:1,family:"hijau"},hijauSedang:{hex:"#5FAD56",name:"Hijau Sedang",level:2,family:"hijau"},hijauTua:{hex:"#2F6B2F",name:"Hijau Tua",level:3,family:"hijau"},
+    orangeMuda:{hex:"#FFD6A5",name:"Oranye Muda",level:1,family:"orange"},orangeSedang:{hex:"#F4A261",name:"Oranye Sedang",level:2,family:"orange"},orangeTua:{hex:"#E76F51",name:"Oranye Tua",level:3,family:"orange"},
+    unguMuda:{hex:"#D9B8FF",name:"Ungu Muda",level:1,family:"ungu"},unguSedang:{hex:"#9B59B6",name:"Ungu Sedang",level:2,family:"ungu"},unguTua:{hex:"#6C3483",name:"Ungu Tua",level:3,family:"ungu"},
+    kuningMuda:{hex:"#FFF9C4",name:"Kuning Muda",level:1,family:"kuning"},kuningSedang:{hex:"#F9A825",name:"Kuning Sedang",level:2,family:"kuning"},kuningTua:{hex:"#E65100",name:"Kuning Tua",level:3,family:"kuning"}
+};
+
+// ========== SOAL L1 ==========
+const soalL1=[
+    {sequence:["biruMuda","biruSedang","question","biruTua"],correct:"biruAgakTua",options:["biruSgtMuda","biruMuda","biruAgakTua","biruTua"],question:"Urutan kecerahan biru. Tentukan warna untuk posisi ❓."},
+    {sequence:["question","merahMuda","merahSedang","merahAgakTua"],correct:"merahSgtMuda",options:["merahSgtMuda","merahMuda","merahSedang","merahAgakTua"],question:"Urutan kecerahan merah. Tentukan warna untuk posisi ❓ di awal."},
+    {sequence:["hijauSgtMuda","hijauMuda","hijauSedang","question"],correct:"hijauAgakTua",options:["hijauMuda","hijauSedang","hijauAgakTua","hijauTua"],question:"Urutan kecerahan hijau. Tentukan warna untuk posisi ❓ di akhir."},
+    {sequence:["orangeMuda","question","orangeAgakTua","orangeTua"],correct:"orangeSedang",options:["orangeSgtMuda","orangeSedang","orangeAgakTua","orangeTua"],question:"Urutan kecerahan oranye. Tentukan warna untuk posisi ❓."},
+    {sequence:["unguMuda","unguSedang","question","unguTua"],correct:"unguAgakTua",options:["unguSgtMuda","unguMuda","unguAgakTua","unguTua"],question:"Urutan kecerahan ungu. Tentukan warna untuk posisi ❓."},
+    {sequence:["biruTua","question","biruSedang","biruMuda"],correct:"biruAgakTua",options:["biruTua","biruAgakTua","biruSedang","biruMuda"],question:"Urutan biru gelap→terang. Tentukan warna untuk posisi ❓."},
+    {sequence:["merahTua","merahAgakTua","question","merahMuda"],correct:"merahSedang",options:["merahTua","merahAgakTua","merahSedang","merahMuda"],question:"Urutan merah gelap→terang. Tentukan warna untuk posisi ❓."},
+    {sequence:["question","hijauAgakTua","hijauSedang","hijauMuda"],correct:"hijauTua",options:["hijauTua","hijauAgakTua","hijauSedang","hijauMuda"],question:"Urutan hijau gelap→terang. Tentukan warna untuk posisi ❓ di awal."},
+    {sequence:["orangeTua","orangeAgakTua","orangeSedang","question"],correct:"orangeMuda",options:["orangeTua","orangeAgakTua","orangeSedang","orangeMuda"],question:"Urutan oranye gelap→terang. Tentukan warna untuk posisi ❓ di akhir."},
+    {sequence:["unguTua","question","unguSedang","unguMuda"],correct:"unguAgakTua",options:["unguTua","unguAgakTua","unguSedang","unguMuda"],question:"Urutan ungu gelap→terang. Tentukan warna untuk posisi ❓."},
+    {sequence:["biruSgtMuda","biruMuda","question","biruAgakTua"],correct:"biruSedang",options:["biruSgtMuda","biruMuda","biruSedang","biruAgakTua"],question:"Urutan biru loncat satu tingkat. Tentukan warna untuk posisi ❓."},
+    {sequence:["question","merahSgtMuda","merahMuda","merahSedang"],correct:"merahTua",options:["merahMuda","merahSedang","merahAgakTua","merahTua"],question:"Urutan merah (terbalik). Tentukan warna untuk posisi ❓ di awal."},
+    {sequence:["hijauSgtMuda","hijauMuda","hijauSedang","question"],correct:"hijauAgakTua",options:["hijauMuda","hijauSedang","hijauAgakTua","hijauTua"],question:"Urutan hijau loncat satu tingkat. Tentukan warna untuk posisi ❓ di akhir."},
+    {sequence:["orangeSedang","question","orangeTua","orangeSgtMuda"],correct:"orangeAgakTua",options:["orangeSgtMuda","orangeSedang","orangeAgakTua","orangeTua"],question:"Urutan oranye loncat satu tingkat. Tentukan warna untuk posisi ❓."},
+    {sequence:["unguSgtMuda","unguMuda","question","unguAgakTua"],correct:"unguSedang",options:["unguSgtMuda","unguMuda","unguSedang","unguAgakTua"],question:"Urutan ungu loncat satu tingkat. Tentukan warna untuk posisi ❓."}
+];
+
+// ========== SOAL L2 POOL ==========
+const soalL2Pool=[
+    {type:'order',subtype:'tg',items:["biruSedang","biruTua","biruMuda"],correctOrder:["biruMuda","biruSedang","biruTua"],question:"Urutkan dari paling TERANG ke GELAP (Biru):"},
+    {type:'order',subtype:'tg',items:["merahMuda","merahTua","merahSedang"],correctOrder:["merahMuda","merahSedang","merahTua"],question:"Urutkan dari paling TERANG ke GELAP (Merah):"},
+    {type:'order',subtype:'tg',items:["hijauTua","hijauMuda","hijauSedang"],correctOrder:["hijauMuda","hijauSedang","hijauTua"],question:"Urutkan dari paling TERANG ke GELAP (Hijau):"},
+    {type:'order',subtype:'tg',items:["orangeSedang","orangeMuda","orangeTua"],correctOrder:["orangeMuda","orangeSedang","orangeTua"],question:"Urutkan dari paling TERANG ke GELAP (Oranye):"},
+    {type:'order',subtype:'tg',items:["unguMuda","unguTua","unguSedang"],correctOrder:["unguMuda","unguSedang","unguTua"],question:"Urutkan dari paling TERANG ke GELAP (Ungu):"},
+    {type:'order',subtype:'gt',items:["biruMuda","biruTua","biruSedang"],correctOrder:["biruTua","biruSedang","biruMuda"],question:"Urutkan dari paling GELAP ke TERANG (Biru):"},
+    {type:'order',subtype:'gt',items:["merahTua","merahMuda","merahSedang"],correctOrder:["merahTua","merahSedang","merahMuda"],question:"Urutkan dari paling GELAP ke TERANG (Merah):"},
+    {type:'order',subtype:'gt',items:["hijauSedang","hijauMuda","hijauTua"],correctOrder:["hijauTua","hijauSedang","hijauMuda"],question:"Urutkan dari paling GELAP ke TERANG (Hijau):"},
+    {type:'order',subtype:'gt',items:["orangeTua","orangeMuda","orangeSedang"],correctOrder:["orangeTua","orangeSedang","orangeMuda"],question:"Urutkan dari paling GELAP ke TERANG (Oranye):"},
+    {type:'order',subtype:'gt',items:["unguSedang","unguTua","unguMuda"],correctOrder:["unguTua","unguSedang","unguMuda"],question:"Urutkan dari paling GELAP ke TERANG (Ungu):"},
+    {type:'findwrong',items:["biruMuda","biruSedang","hijauTua","biruTua"],correct:"hijauTua",options:["biruMuda","biruSedang","hijauTua","biruTua"],question:"Warna yang TIDAK sesuai pola (seharusnya semua Biru):"},
+    {type:'findwrong',items:["merahMuda","merahSedang","biruMuda","merahTua"],correct:"biruMuda",options:["merahMuda","merahSedang","biruMuda","merahTua"],question:"Warna yang TIDAK sesuai pola (seharusnya semua Merah):"},
+    {type:'findwrong',items:["hijauMuda","hijauSedang","hijauTua","orangeMuda"],correct:"orangeMuda",options:["hijauMuda","hijauSedang","hijauTua","orangeMuda"],question:"Warna yang TIDAK sesuai pola (seharusnya semua Hijau):"},
+    {type:'findwrong',items:["orangeMuda","orangeSedang","unguSedang","orangeTua"],correct:"unguSedang",options:["orangeMuda","orangeSedang","unguSedang","orangeTua"],question:"Warna yang TIDAK sesuai pola (seharusnya semua Oranye):"},
+    {type:'findwrong',items:["unguMuda","unguSedang","merahTua","unguTua"],correct:"merahTua",options:["unguMuda","unguSedang","merahTua","unguTua"],question:"Warna yang TIDAK sesuai pola (seharusnya semua Ungu):"}
+];
+
+// ========== SOAL L3 POOL (28 soal: 10 x 3A, 10 x 3B, 8 x 3C) ==========
+const soalL3Pool=[
+    // 3A Pola Bergantian — ❓ akhir
+    {subtype:'3a',sequence:["biruMuda","merahMuda","biruSedang","merahSedang"],correct:"biruTua",options:["biruTua","merahTua","biruSedang","merahMuda"],question:"Pola bergantian. Tentukan warna untuk posisi ❓ di akhir urutan.",hint:"Biru-Merah bergantian → Biru Tua"},
+    {subtype:'3a',sequence:["hijauMuda","orangeMuda","hijauSedang","orangeSedang","hijauTua"],correct:"orangeTua",options:["hijauTua","orangeTua","hijauSedang","kuningSedang"],question:"Pola bergantian. Tentukan warna untuk posisi ❓ di akhir urutan.",hint:"Hijau-Oranye bergantian → Oranye Tua"},
+    {subtype:'3a',sequence:["merahMuda","unguMuda","merahSedang","unguSedang"],correct:"merahTua",options:["merahTua","unguTua","kuningMuda","merahSedang"],question:"Pola bergantian. Tentukan warna untuk posisi ❓ di akhir urutan.",hint:"Merah-Ungu bergantian → Merah Tua"},
+    {subtype:'3a',sequence:["kuningMuda","biruMuda","kuningSedang","biruSedang","kuningTua"],correct:"biruTua",options:["kuningTua","biruTua","kuningSedang","orangeSedang"],question:"Pola bergantian. Tentukan warna untuk posisi ❓ di akhir urutan.",hint:"Kuning-Biru bergantian → Biru Tua"},
+    {subtype:'3a',sequence:["orangeMuda","unguMuda","orangeSedang","unguSedang"],correct:"orangeTua",options:["orangeTua","unguTua","orangeSedang","biruMuda"],question:"Pola bergantian. Tentukan warna untuk posisi ❓ di akhir urutan.",hint:"Oranye-Ungu bergantian → Oranye Tua"},
+    {subtype:'3a',sequence:["hijauMuda","kuningMuda","hijauSedang","kuningSedang","hijauTua"],correct:"kuningTua",options:["hijauTua","kuningTua","hijauSedang","merahMuda"],question:"Pola bergantian. Tentukan warna untuk posisi ❓ di akhir urutan.",hint:"Hijau-Kuning bergantian → Kuning Tua"},
+    // 3A — ❓ di tengah
+    {subtype:'3a',sequence:["biruMuda","merahMuda","question","merahSedang","biruTua"],correct:"biruSedang",options:["biruSedang","merahSedang","biruTua","merahMuda"],question:"Pola bergantian. Tentukan warna untuk posisi ❓ di tengah urutan.",hint:"Biru-Merah bergantian → posisi tengah = Biru Sedang"},
+    {subtype:'3a',sequence:["hijauMuda","orangeMuda","question","orangeSedang","hijauTua"],correct:"hijauSedang",options:["hijauSedang","orangeSedang","hijauTua","kuningMuda"],question:"Pola bergantian. Tentukan warna untuk posisi ❓ di tengah urutan.",hint:"Hijau-Oranye bergantian → Hijau Sedang"},
+    // 3A — ❓ di awal
+    {subtype:'3a',sequence:["question","unguMuda","merahSedang","unguSedang","merahTua"],correct:"merahMuda",options:["merahMuda","unguMuda","merahSedang","biruMuda"],question:"Pola bergantian. Tentukan warna untuk posisi ❓ di awal urutan.",hint:"Merah-Ungu bergantian → awal = Merah Muda"},
+    {subtype:'3a',sequence:["question","biruMuda","kuningSedang","biruSedang","kuningTua"],correct:"kuningMuda",options:["kuningMuda","biruMuda","kuningSedang","orangeMuda"],question:"Pola bergantian. Tentukan warna untuk posisi ❓ di awal urutan.",hint:"Kuning-Biru bergantian → awal = Kuning Muda"},
+
+    // 3B Pola Per Kelompok — ❓ akhir
+    {subtype:'3b',sequence:["biruMuda","biruSedang","merahMuda","merahSedang"],correct:"biruTua",options:["biruTua","merahTua","biruSedang","kuningSedang"],question:"Pola per kelompok. Tentukan warna untuk posisi ❓ di akhir urutan.",hint:"Biru (muda→sedang) + Merah → Biru Tua"},
+    {subtype:'3b',sequence:["hijauMuda","hijauSedang","orangeMuda","orangeSedang","hijauTua"],correct:"orangeTua",options:["hijauTua","orangeTua","hijauSedang","unguMuda"],question:"Pola per kelompok. Tentukan warna untuk posisi ❓ di akhir urutan.",hint:"Hijau (muda→sedang→tua) + Oranye → Oranye Tua"},
+    {subtype:'3b',sequence:["merahMuda","merahSedang","unguMuda","unguSedang"],correct:"merahTua",options:["merahTua","unguTua","kuningMuda","merahSedang"],question:"Pola per kelompok. Tentukan warna untuk posisi ❓ di akhir urutan.",hint:"Merah (muda→sedang) + Ungu → Merah Tua"},
+    {subtype:'3b',sequence:["kuningMuda","kuningSedang","biruMuda","biruSedang","kuningTua"],correct:"biruTua",options:["kuningTua","biruTua","hijauMuda","biruSedang"],question:"Pola per kelompok. Tentukan warna untuk posisi ❓ di akhir urutan.",hint:"Kuning (muda→sedang→tua) + Biru → Biru Tua"},
+    {subtype:'3b',sequence:["orangeMuda","orangeSedang","biruMuda","biruSedang","orangeTua"],correct:"biruTua",options:["orangeTua","biruTua","unguSedang","biruSedang"],question:"Pola per kelompok. Tentukan warna untuk posisi ❓ di akhir urutan.",hint:"Oranye (muda→sedang→tua) + Biru → Biru Tua"},
+    {subtype:'3b',sequence:["unguMuda","unguSedang","hijauMuda","hijauSedang"],correct:"unguTua",options:["unguTua","hijauTua","unguSedang","kuningMuda"],question:"Pola per kelompok. Tentukan warna untuk posisi ❓ di akhir urutan.",hint:"Ungu (muda→sedang) + Hijau → Ungu Tua"},
+    // 3B — ❓ di tengah kelompok kedua
+    {subtype:'3b',sequence:["biruMuda","biruSedang","biruTua","question","merahSedang"],correct:"merahMuda",options:["merahMuda","biruMuda","merahSedang","kuningMuda"],question:"Pola per kelompok. Tentukan warna untuk posisi ❓ di tengah urutan.",hint:"Biru selesai, kelompok Merah dimulai → Merah Muda"},
+    {subtype:'3b',sequence:["hijauMuda","hijauSedang","hijauTua","question","orangeSedang"],correct:"orangeMuda",options:["orangeMuda","hijauMuda","orangeSedang","unguMuda"],question:"Pola per kelompok. Tentukan warna untuk posisi ❓ di tengah urutan.",hint:"Hijau selesai, kelompok Oranye dimulai → Oranye Muda"},
+    // 3B — ❓ di awal
+    {subtype:'3b',sequence:["question","merahSedang","unguMuda","unguSedang","merahTua"],correct:"merahMuda",options:["merahMuda","unguMuda","merahSedang","biruMuda"],question:"Pola per kelompok. Tentukan warna untuk posisi ❓ di awal urutan.",hint:"Kelompok Merah dimulai → Merah Muda"},
+    {subtype:'3b',sequence:["question","kuningSedang","biruMuda","biruSedang","kuningTua"],correct:"kuningMuda",options:["kuningMuda","kuningSedang","biruMuda","orangeMuda"],question:"Pola per kelompok. Tentukan warna untuk posisi ❓ di awal urutan.",hint:"Kelompok Kuning dimulai → Kuning Muda"},
+
+    // 3C Multi-aturan + distractor bervariasi
+    {subtype:'3c',sequence:["biruMuda","merahMuda","kuningSedang","biruSedang","merahSedang"],correct:"biruTua",options:["biruTua","merahTua","kuningTua","biruSedang"],question:"Pola multi-aturan + distractor. Tentukan warna untuk posisi ❓ di akhir urutan.",hint:"Biru-Merah bergantian; abaikan Kuning Sedang!"},
+    {subtype:'3c',sequence:["hijauMuda","orangeMuda","unguMuda","hijauSedang","orangeSedang","hijauTua"],correct:"orangeTua",options:["hijauTua","orangeTua","unguTua","hijauSedang"],question:"Pola multi-aturan + distractor. Tentukan warna untuk posisi ❓ di akhir urutan.",hint:"Hijau-Oranye bergantian; abaikan Ungu Muda!"},
+    {subtype:'3c',sequence:["merahMuda","unguMuda","kuningMuda","merahSedang","unguSedang"],correct:"merahTua",options:["merahTua","unguTua","kuningTua","merahSedang"],question:"Pola multi-aturan + distractor. Tentukan warna untuk posisi ❓ di akhir urutan.",hint:"Merah-Ungu bergantian; abaikan Kuning Muda!"},
+    {subtype:'3c',sequence:["kuningMuda","biruMuda","orangeSedang","kuningSedang","biruSedang","kuningTua"],correct:"biruTua",options:["kuningTua","biruTua","orangeTua","kuningSedang"],question:"Pola multi-aturan + distractor. Tentukan warna untuk posisi ❓ di akhir urutan.",hint:"Kuning-Biru bergantian; abaikan Oranye Sedang!"},
+    {subtype:'3c',sequence:["orangeMuda","biruMuda","merahSedang","orangeSedang","biruSedang","orangeTua"],correct:"biruTua",options:["orangeTua","biruTua","merahTua","orangeSedang"],question:"Pola multi-aturan + distractor. Tentukan warna untuk posisi ❓ di akhir urutan.",hint:"Oranye-Biru bergantian; abaikan Merah Sedang!"},
+    {subtype:'3c',sequence:["hijauMuda","kuningMuda","biruMuda","hijauSedang","kuningSedang","hijauTua"],correct:"kuningTua",options:["hijauTua","kuningTua","biruTua","hijauSedang"],question:"Pola multi-aturan + distractor. Tentukan warna untuk posisi ❓ di akhir urutan.",hint:"Hijau-Kuning bergantian; abaikan Biru Muda!"},
+    {subtype:'3c',sequence:["merahMuda","biruMuda","orangeMuda","merahSedang","biruSedang"],correct:"merahTua",options:["merahTua","biruTua","orangeTua","merahSedang"],question:"Pola multi-aturan + distractor. Tentukan warna untuk posisi ❓ di akhir urutan.",hint:"Merah-Biru bergantian; abaikan Oranye Muda!"},
+    {subtype:'3c',sequence:["unguMuda","hijauMuda","unguSedang","hijauSedang","unguTua"],correct:"hijauTua",options:["unguTua","hijauTua","unguSedang","kuningMuda"],question:"Pola multi-aturan + distractor. Tentukan warna untuk posisi ❓ di akhir urutan.",hint:"Ungu-Hijau bergantian → Hijau Tua"}
+];
+
+// ========== NAV ==========
+function goToPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav-pill').forEach(p=>p.classList.remove('active'));const m={'page-identity':'navIdentity','page-l1':'navL1','page-l2':'navL2','page-l3':'navL3','page-summary':'navSummary'};const p=document.getElementById(m[id]);if(p&&!p.classList.contains('locked'))p.classList.add('active');window.scrollTo(0,0)}
+function unlockNav(id){const e=document.getElementById(id);if(e)e.classList.remove('locked')}
+
+// ========== IDENTITY ==========
+function startTest(){
+    const nama=document.getElementById('nama').value.trim();
+    const tglLahir=document.getElementById('tglLahir').value;
+    const jenisKelamin=document.getElementById('jenisKelamin').value;
+    const pendidikan=document.getElementById('pendidikan').value;
+    const pekerjaan=document.getElementById('pekerjaan').value.trim();
+    if(!nama||!tglLahir||!jenisKelamin||!pendidikan){showToast('⚠️ Harap isi semua kolom wajib!');return}
+    peserta={nama,tglLahir,jenisKelamin,pendidikan,pekerjaan};
+    document.getElementById('userChip').textContent='👤 '+nama;
+    document.getElementById('userChip').classList.add('show');
+    unlockNav('navL1');
+    initAll();
+    renderL1();
+    goToPage('page-l1');
+}
+function showShareLink(){document.getElementById('shareUrl').textContent=window.location.href.split('?')[0];document.getElementById('shareUrlBox').classList.add('show')}
+function copyLink(){navigator.clipboard.writeText(document.getElementById('shareUrl').textContent).then(()=>showToast('✅ Link disalin!')).catch(()=>showToast('Salin manual: '+document.getElementById('shareUrl').textContent))}
+function showToast(msg,dur=2800){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
+
+// ========== INIT ==========
+function initAll(){
+    stateL1={answers:new Array(15).fill(null),submitted:false};
+    stateL2={answers:new Array(15).fill(null),submitted:false};
+    stateL3={answers:new Array(15).fill(null),submitted:false};
+    optionOrderL1=soalL1.map(s=>shuffle(s.options));
+    soalL2Shuffled=shuffle([...soalL2Pool]);
+    optionOrderL2=soalL2Shuffled.map(s=>s.type==='order'?getPermutations(s.items,s.correctOrder):shuffle(s.options));
+    const p3a=shuffle(soalL3Pool.filter(s=>s.subtype==='3a')).slice(0,5);
+    const p3b=shuffle(soalL3Pool.filter(s=>s.subtype==='3b')).slice(0,5);
+    const p3c=shuffle(soalL3Pool.filter(s=>s.subtype==='3c')).slice(0,5);
+    soalL3Shuffled=shuffle([...p3a,...p3b,...p3c]);
+    optionOrderL3=soalL3Shuffled.map(s=>shuffle(s.options));
+}
+
+function getPermutations(items,correctOrder){
+    const perms=[];function p(arr,m=[]){if(!arr.length){perms.push([...m]);return}arr.forEach((v,i)=>{const r=[...arr];r.splice(i,1);p(r,[...m,v])})}p([...items]);
+    const ck=correctOrder?correctOrder.join(','):null;const cp=ck?perms.find(x=>x.join(',')===ck):null;
+    let sel=shuffle(perms).slice(0,4);if(cp&&!sel.some(x=>x.join(',')===ck))sel[Math.floor(Math.random()*4)]=cp;return sel;
+}
+
+// ========== RENDER HELPERS ==========
+function cbL1(k){if(k==='question')return`<div class="question-box">❓</div>`;const c=colorsL1[k];if(!c)return`<div class="color-box" style="background:#ccc;"></div>`;return`<div class="color-box" style="background:${c.hex};" title="${c.name}"></div>`}
+function cbL23(k,sz='45px'){const c=colorsL23[k];if(!c)return`<div style="background:#ccc;width:${sz};height:${sz};border-radius:8px;"></div>`;return`<div style="background:${c.hex};width:${sz};height:${sz};border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,.2);" title="${c.name}"></div>`}
+function cbL3(k){if(k==='question')return`<div class="question-box">❓</div>`;const c=colorsL23[k];if(!c)return`<div class="color-box" style="background:#ccc;"></div>`;return`<div class="color-box" style="background:${c.hex};" title="${c.name}"></div>`}
+const LT=['A','B','C','D'];
+
+// ========== LEVEL 1 ==========
+function renderL1(){
+    const con=document.getElementById('soal-container-l1');con.innerHTML='';
+    soalL1.forEach((s,idx)=>{
+        const sel=stateL1.answers[idx];const opts=optionOrderL1[idx];
+        const seq=s.sequence.map(k=>cbL1(k)).join('<span class="arrow">→</span>');
+        let oh='<div class="options">';
+        opts.forEach((ok,oi)=>{const c=colorsL1[ok];const dis=stateL1.submitted?'style="pointer-events:none;opacity:.8;"':'';oh+=`<div class="option-radio ${sel===ok?'selected':''}" data-scope="l1" data-idx="${idx}" data-opt="${ok}" ${dis}><div class="opt-color" style="background:${c.hex};"></div><div class="opt-label">${LT[oi]}</div></div>`});oh+='</div>';
+        con.insertAdjacentHTML('beforeend',`<div class="soal-card"><div class="soal-header"><span class="soal-nomor">Soal ${idx+1}</span></div><div class="soal-pertanyaan">📖 "${s.question}"</div><div class="pattern">${seq}</div>${oh}</div>`);
+    });
+    if(!stateL1.submitted)document.querySelectorAll('[data-scope="l1"]').forEach(e=>e.addEventListener('click',()=>{stateL1.answers[+e.dataset.idx]=e.dataset.opt;renderL1()}));
+}
+document.getElementById('submitL1').addEventListener('click',()=>{
+    if(stateL1.submitted){showToast('Sudah disubmit!');return}
+    if(stateL1.answers.some(a=>a===null)){showToast('⚠️ Jawab semua 15 soal!');return}
+    stateL1.submitted=true;const btn=document.getElementById('submitL1');btn.disabled=true;btn.textContent='✓ SUDAH DISUBMIT';
+    renderL1();dispL1();unlockNav('navL2');document.getElementById('next-l2-area').style.display='block';renderL2();
+});
+function dispL1(){
+    let c=0,rows='';
+    stateL1.answers.forEach((ans,i)=>{const ok=ans===soalL1[i].correct;if(ok)c++;const opts=optionOrderL1[i];const aL=ans?LT[opts.indexOf(ans)]:'-';const cL=LT[opts.indexOf(soalL1[i].correct)];rows+=`<tr><td>${i+1}</td><td>${aL}–${colorsL1[ans]?.name||'–'}</td><td>${cL}–${colorsL1[soalL1[i].correct].name}</td><td>${ok?'<span class="correct-badge">✓</span>':'<span class="wrong-badge">✗</span>'}</td></tr>`});
+    document.getElementById('result-container-l1').innerHTML=`<div class="result-card"><div class="result-title">📊 HASIL LEVEL 1</div><div class="score-big">${c}/15</div><div class="score-detail"><div class="score-item">✅${c}Benar</div><div class="score-item">❌${15-c}Salah</div><div class="score-item">📈${Math.round(c/15*100)}%</div></div><div style="overflow-x:auto;"><table class="outcome-table"><thead><tr><th>No</th><th>Jawaban</th><th>Benar</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+}
+
+// ========== LEVEL 2 ==========
+function renderL2(){
+    const con=document.getElementById('soal-container-l2');con.innerHTML='';
+    const bClass={tg:'badge-tg',gt:'badge-gt',findwrong:'badge-cs'};
+    const bText={tg:'🔆 Terang→Gelap',gt:'🌑 Gelap→Terang',findwrong:'🔍 Cari Tidak Sesuai'};
+    soalL2Shuffled.forEach((s,idx)=>{
+        const sel=stateL2.answers[idx];const opts=optionOrderL2[idx];
+        const sk=s.type==='order'?s.subtype:'findwrong';
+        const items=s.items.map(k=>cbL23(k,'50px')).join('');
+        let oh='<div class="options">';
+        if(s.type==='order'){
+            opts.forEach((p,oi)=>{const pk=p.join(',');const dis=stateL2.submitted?'style="pointer-events:none;opacity:.8;"':'';const sh=p.map(k=>`<div class="opt-color-item" style="background:${colorsL23[k].hex};"></div>`).join('');oh+=`<div class="option-radio ${sel===pk?'selected':''}" data-scope="l2" data-idx="${idx}" data-opt="${pk}" ${dis}><div class="opt-colors">${sh}</div><div class="opt-label">${LT[oi]}</div></div>`});
+        }else{
+            opts.forEach((ok,oi)=>{const c=colorsL23[ok];const dis=stateL2.submitted?'style="pointer-events:none;opacity:.8;"':'';oh+=`<div class="option-radio ${sel===ok?'selected':''}" data-scope="l2" data-idx="${idx}" data-opt="${ok}" ${dis}><div class="opt-color-item" style="width:38px;height:38px;background:${c.hex};border-radius:8px;"></div><div class="opt-label">${LT[oi]}</div></div>`});
+        }
+        oh+='</div>';
+        con.insertAdjacentHTML('beforeend',`<div class="soal-card"><div class="soal-header"><span class="soal-nomor">Soal ${idx+1}</span><span class="badge-type ${bClass[sk]}">${bText[sk]}</span></div><div class="soal-pertanyaan">📖 "${s.question}"</div><div class="pattern">${items}</div>${oh}</div>`);
+    });
+    if(!stateL2.submitted)document.querySelectorAll('[data-scope="l2"]').forEach(e=>e.addEventListener('click',()=>{stateL2.answers[+e.dataset.idx]=e.dataset.opt;renderL2()}));
+}
+document.getElementById('submitL2').addEventListener('click',()=>{
+    if(stateL2.submitted){showToast('Sudah disubmit!');return}
+    if(stateL2.answers.some(a=>a===null)){showToast('⚠️ Jawab semua 15 soal!');return}
+    stateL2.submitted=true;const btn=document.getElementById('submitL2');btn.disabled=true;btn.textContent='✓ SUDAH DISUBMIT';
+    renderL2();dispL2();unlockNav('navL3');document.getElementById('next-l3-area').style.display='block';renderL3();
+});
+function dispL2(){
+    let c=0,rows='';
+    stateL2.answers.forEach((ans,i)=>{
+        const s=soalL2Shuffled[i];const opts=optionOrderL2[i];let ok,dA,dB;
+        if(s.type==='order'){const ck=s.correctOrder.join(',');ok=ans===ck;const aL=ans?LT[opts.findIndex(p=>p.join(',')===ans)]:'-';const cL=LT[opts.findIndex(p=>p.join(',')===ck)];dA=aL+'–'+(ans?ans.split(',').map(k=>colorsL23[k].name).join('→'):'–');dB=cL+'–'+s.correctOrder.map(k=>colorsL23[k].name).join('→')}
+        else{ok=ans===s.correct;const aL=ans?LT[opts.indexOf(ans)]:'-';const cL=LT[opts.indexOf(s.correct)];dA=aL+'–'+(colorsL23[ans]?.name||'–');dB=cL+'–'+colorsL23[s.correct].name}
+        if(ok)c++;rows+=`<tr><td>${i+1}</td><td style="font-size:.7rem;">${dA}</td><td style="font-size:.7rem;">${dB}</td><td>${ok?'<span class="correct-badge">✓</span>':'<span class="wrong-badge">✗</span>'}</td></tr>`;
+    });
+    document.getElementById('result-container-l2').innerHTML=`<div class="result-card"><div class="result-title">📊 HASIL LEVEL 2</div><div class="score-big">${c}/15</div><div class="score-detail"><div class="score-item">✅${c}Benar</div><div class="score-item">❌${15-c}Salah</div><div class="score-item">📈${Math.round(c/15*100)}%</div></div><div style="overflow-x:auto;"><table class="outcome-table"><thead><tr><th>No</th><th>Jawaban</th><th>Benar</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+}
+
+// ========== LEVEL 3 ==========
+function renderL3(){
+    const con=document.getElementById('soal-container-l3');con.innerHTML='';
+    const bClass={'3a':'badge-3a','3b':'badge-3b','3c':'badge-3c'};
+    const bText={'3a':'🔄 Bergantian','3b':'📦 Per Kelompok','3c':'🔥 Multi-aturan'};
+    soalL3Shuffled.forEach((s,idx)=>{
+        const sel=stateL3.answers[idx];const opts=optionOrderL3[idx];
+        // Jika sequence sudah mengandung "question" (posisi tengah/awal),
+        // render apa adanya. Jika tidak, tambahkan → ❓ di akhir.
+        const hasQuestion=s.sequence.includes('question');
+        const seqParts=s.sequence.map(k=>cbL3(k)).join('<span class="arrow">→</span>');
+        const seq=hasQuestion ? seqParts : seqParts+'<span class="arrow">→</span><div class="question-box">❓</div>';
+        const df=s.subtype==='3c'?'<span class="difficulty">🔥 Sulit</span>':'';
+        let oh='<div class="options">';
+        opts.forEach((ok,oi)=>{const c=colorsL23[ok];if(!c)return;const dis=stateL3.submitted?'style="pointer-events:none;opacity:.8;"':'';oh+=`<div class="option-radio ${sel===ok?'selected':''}" data-scope="l3" data-idx="${idx}" data-opt="${ok}" ${dis}><div class="opt-color" style="background:${c.hex};"></div><div class="opt-label">${LT[oi]}</div></div>`});oh+='</div>';
+        con.insertAdjacentHTML('beforeend',`<div class="soal-card"><div class="soal-header"><span class="soal-nomor">Soal ${idx+1}</span><span class="badge-type ${bClass[s.subtype]}">${bText[s.subtype]}</span>${df}</div><div class="soal-pertanyaan">📖 "${s.question}"</div><div class="pattern">${seq}</div>${oh}</div>`);
+    });
+    if(!stateL3.submitted)document.querySelectorAll('[data-scope="l3"]').forEach(e=>e.addEventListener('click',()=>{stateL3.answers[+e.dataset.idx]=e.dataset.opt;renderL3()}));
+}
+document.getElementById('submitL3').addEventListener('click',()=>{
+    if(stateL3.submitted){showToast('Sudah disubmit!');return}
+    if(stateL3.answers.some(a=>a===null)){showToast('⚠️ Jawab semua 15 soal!');return}
+    stateL3.submitted=true;const btn=document.getElementById('submitL3');btn.disabled=true;btn.textContent='✓ SUDAH DISUBMIT';
+    renderL3();dispL3();unlockNav('navSummary');document.getElementById('next-summary-area').style.display='block';buildSummary();
+});
+function dispL3(){
+    let c=0,rows='';
+    stateL3.answers.forEach((ans,i)=>{const s=soalL3Shuffled[i];const opts=optionOrderL3[i];const ok=ans===s.correct;if(ok)c++;const aL=ans?LT[opts.indexOf(ans)]:'-';const cL=LT[opts.indexOf(s.correct)];rows+=`<tr><td>${i+1}</td><td>${aL}–${colorsL23[ans]?.name||'–'}</td><td>${cL}–${colorsL23[s.correct].name}</td><td>${ok?'<span class="correct-badge">✓</span>':'<span class="wrong-badge">✗</span>'}</td></tr>`});
+    const hints=soalL3Shuffled.map((s,i)=>`<span style="font-size:.7rem;">Soal ${i+1}: ${s.hint}</span><br>`).join('');
+    document.getElementById('result-container-l3').innerHTML=`<div class="result-card"><div class="result-title">📊 HASIL LEVEL 3</div><div class="score-big">${c}/15</div><div class="score-detail"><div class="score-item">✅${c}Benar</div><div class="score-item">❌${15-c}Salah</div><div class="score-item">📈${Math.round(c/15*100)}%</div></div><div style="overflow-x:auto;"><table class="outcome-table"><thead><tr><th>No</th><th>Jawaban</th><th>Benar</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div><div style="margin-top:.8rem;background:rgba(255,255,255,.12);padding:.6rem;border-radius:10px;"><strong>💡 Kunci:</strong><br>${hints}</div></div>`;
+}
+
+// ========== SUMMARY ==========
+function scoreL1(){return stateL1.answers.filter((a,i)=>a===soalL1[i].correct).length}
+function scoreL2(){return stateL2.answers.filter((a,i)=>{const s=soalL2Shuffled[i];return s.type==='order'?a===s.correctOrder.join(','):a===s.correct}).length}
+function scoreL3(){return stateL3.answers.filter((a,i)=>a===soalL3Shuffled[i].correct).length}
+
+function buildSummary(){
+    const s1=scoreL1(),s2=scoreL2(),s3=scoreL3(),tot=s1+s2+s3;
+    const sTG=stateL2.answers.filter((a,i)=>soalL2Shuffled[i].subtype==='tg'&&a===soalL2Shuffled[i].correctOrder?.join(',')).length;
+    const sGT=stateL2.answers.filter((a,i)=>soalL2Shuffled[i].subtype==='gt'&&a===soalL2Shuffled[i].correctOrder?.join(',')).length;
+    const sCS=stateL2.answers.filter((a,i)=>soalL2Shuffled[i].type==='findwrong'&&a===soalL2Shuffled[i].correct).length;
+    const s3a=stateL3.answers.filter((a,i)=>soalL3Shuffled[i].subtype==='3a'&&a===soalL3Shuffled[i].correct).length;
+    const s3b=stateL3.answers.filter((a,i)=>soalL3Shuffled[i].subtype==='3b'&&a===soalL3Shuffled[i].correct).length;
+    const s3c=stateL3.answers.filter((a,i)=>soalL3Shuffled[i].subtype==='3c'&&a===soalL3Shuffled[i].correct).length;
+    document.getElementById('peserta-info').innerHTML=`<strong>${peserta.nama}</strong> | ${peserta.jenisKelamin} | ${peserta.tglLahir} | ${peserta.pendidikan} | ${peserta.pekerjaan||'-'}<br><small>Waktu submit: ${new Date().toLocaleString('id-ID')}</small>`;
+    const bl=[{label:'Level 1<br>Brightness Seq.',sc:s1,max:15},{label:'L2 Terang→Gelap',sc:sTG,max:5},{label:'L2 Gelap→Terang',sc:sGT,max:5},{label:'L2 Cari Tidak Sesuai',sc:sCS,max:5},{label:'Level 3A<br>Bergantian',sc:s3a,max:5},{label:'Level 3B<br>Per Kelompok',sc:s3b,max:5},{label:'Level 3C<br>Multi-aturan',sc:s3c,max:5}];
+    document.getElementById('summary-grid').innerHTML=bl.map(b=>`<div class="summary-block"><div class="sb-label">${b.label}</div><div class="sb-score">${b.sc}</div><div class="sb-total">dari ${b.max}</div><div class="progress-bar" style="margin-top:.5rem;"><div class="progress-fill" style="width:${Math.round(b.sc/b.max*100)}%;background:${b.sc/b.max>=.7?'#38a169':b.sc/b.max>=.4?'#d69e2e':'#e53e3e'};"></div></div></div>`).join('');
+    const pct=Math.round(tot/45*100);
+    document.getElementById('total-score-text').textContent=`${tot}/45 (${pct}%)`;
+    document.getElementById('total-progress').style.width=pct+'%';
+}
+
+// ========== SUBMIT TO GOOGLE SHEETS ==========
+async function submitToGoogleSheets(){
+    const btn      = document.getElementById('btnSubmitSheet');
+    const statusEl = document.getElementById('submitStatus');
+    btn.disabled   = true;
+    btn.textContent = '⏳ Mengirim data...';
+    statusEl.textContent = 'Menyiapkan data...';
+
+    const LT    = ['A','B','C','D'];
+    const waktu = new Date().toLocaleString('id-ID');
+
+    // ── Helper: format "A (Nama Warna)" dari key warna + indeks opsi ──────
+    function fmtL1(key, letterIdx) {
+        if (key === null || key === undefined || letterIdx < 0) return '-';
+        var nm = (colorsL1[key] && colorsL1[key].name) ? colorsL1[key].name : key;
+        return LT[letterIdx] + ' (' + nm + ')';
+    }
+    function fmtL23single(key, letterIdx) {
+        if (!key || letterIdx < 0) return '-';
+        var nm = (colorsL23[key] && colorsL23[key].name) ? colorsL23[key].name : key;
+        return LT[letterIdx] + ' (' + nm + ')';
+    }
+    function fmtL23order(keys, letterIdx) {
+        if (!keys || letterIdx < 0) return '-';
+        var names = keys.map(function(k){ return colorsL23[k] ? colorsL23[k].name : k; }).join(' \u2192 ');
+        return LT[letterIdx] + ' (' + names + ')';
+    }
+
+    // ── Level 1: jawaban peserta → "A (Nama Warna)" ─────────────────────
+    var jawabanL1 = soalL1.map(function(s, i) {
+        var opts   = optionOrderL1[i];
+        var ans    = stateL1.answers[i];
+        var idx    = (ans !== null && ans !== undefined) ? opts.indexOf(ans) : -1;
+        return fmtL1(ans, idx);
+    });
+
+    // ── Level 1: kunci jawaban → "A (Nama Warna)" ───────────────────────
+    var kunciL1 = soalL1.map(function(s, i) {
+        var opts = optionOrderL1[i];
+        var idx  = opts.indexOf(s.correct);
+        return fmtL1(s.correct, idx);
+    });
+
+    var benarL1Skor = scoreL1();
+
+    // ── Level 2: jawaban peserta ─────────────────────────────────────────
+    // tipe 'order' → "A (Warna1 → Warna2 → Warna3)"
+    // tipe 'findwrong' → "A (Nama Warna)"
+    var jawabanL2 = soalL2Shuffled.map(function(s, i) {
+        var opts = optionOrderL2[i];
+        var ans  = stateL2.answers[i];
+        if (!ans) return '-';
+        if (s.type === 'order') {
+            var idx = opts.findIndex(function(p){ return p.join(',') === ans; });
+            var keys = ans.split(',');
+            return fmtL23order(keys, idx);
+        } else {
+            var idx2 = opts.indexOf(ans);
+            return fmtL23single(ans, idx2);
+        }
+    });
+
+    // ── Level 2: kunci jawaban ───────────────────────────────────────────
+    var kunciL2 = soalL2Shuffled.map(function(s, i) {
+        var opts = optionOrderL2[i];
+        if (s.type === 'order') {
+            var ck  = s.correctOrder.join(',');
+            var idx = opts.findIndex(function(p){ return p.join(',') === ck; });
+            return fmtL23order(s.correctOrder, idx);
+        } else {
+            var idx2 = opts.indexOf(s.correct);
+            return fmtL23single(s.correct, idx2);
+        }
+    });
+
+    var benarL2Skor = scoreL2();
+
+    // ── Level 3: jawaban peserta → "A (Nama Warna)" ─────────────────────
+    var jawabanL3 = soalL3Shuffled.map(function(s, i) {
+        var opts = optionOrderL3[i];
+        var ans  = stateL3.answers[i];
+        var idx  = (ans !== null && ans !== undefined) ? opts.indexOf(ans) : -1;
+        return fmtL23single(ans, idx);
+    });
+
+    // ── Level 3: kunci jawaban → "A (Nama Warna)" ───────────────────────
+    var kunciL3 = soalL3Shuffled.map(function(s, i) {
+        var opts = optionOrderL3[i];
+        var idx  = opts.indexOf(s.correct);
+        return fmtL23single(s.correct, idx);
+    });
+
+    var benarL3Skor = scoreL3();
+    var total = benarL1Skor + benarL2Skor + benarL3Skor;
+
+    // ── Payload ke Apps Script ───────────────────────────────────────────
+    var payload = {
+        nama        : peserta.nama,
+        tglLahir    : peserta.tglLahir,
+        jenisKelamin: peserta.jenisKelamin,
+        pendidikan  : peserta.pendidikan,
+        pekerjaan   : peserta.pekerjaan || '-',
+        waktu       : waktu,
+        jawabanL1   : jawabanL1,          // array 15 string "A (Nama Warna)"
+        benarL1Skor : benarL1Skor,        // angka jumlah benar L1
+        benarL1     : kunciL1,            // array 15 string kunci jawaban L1
+        jawabanL2   : jawabanL2,          // array 15 string jawaban peserta L2
+        benarL2Skor : benarL2Skor,        // angka jumlah benar L2
+        benarL2     : kunciL2,            // array 15 string kunci jawaban L2
+        jawabanL3   : jawabanL3,          // array 15 string jawaban peserta L3
+        benarL3Skor : benarL3Skor,        // angka jumlah benar L3
+        benarL3     : kunciL3,            // array 15 string kunci jawaban L3
+        total       : total               // benarL1Skor + benarL2Skor + benarL3Skor
+    };
+
+    statusEl.textContent = 'Mengirim data ke Google Sheets...';
+    try {
+        await fetch(GAS_URL, {
+            method : 'POST',
+            mode   : 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body   : JSON.stringify(payload)
+        });
+        btn.textContent  = '✅ Data Berhasil Dikirim!';
+        btn.style.background = '#38a169';
+        statusEl.innerHTML = '<span style="color:#276749;font-weight:bold;">✅ Data berhasil dikirim ke Google Sheets!</span>'
+            + '<br><small>Skor total: ' + total + '/45</small>';
+        showToast('✅ Data berhasil dikirim ke Google Sheets!', 4000);
+    } catch(err) {
+        btn.disabled    = false;
+        btn.textContent = '⚠️ Coba Kirim Ulang';
+        statusEl.innerHTML = '<span style="color:#c53030;">⚠️ Gagal mengirim. Periksa koneksi & URL App Script.</span>';
+    }
+}
+
+document.getElementById('navIdentity').classList.add('active');
+</script>
+</body>
+</html>
